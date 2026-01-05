@@ -26,6 +26,54 @@ Customizable Styling: Modern and intuitive user interface with custom CSS for im
 
 MongoDB Integration: Persistently stores all network request data (normal and anomalous) for historical analysis and review.
 
+```mermaid
+graph LR
+    %% Styles
+    classDef input fill:#00,stroke:#01579b,stroke-width:2px;
+    classDef process fill:#00,stroke:#e65100,stroke-width:2px;
+    classDef ai fill:#00,stroke:#4a148c,stroke-width:2px;
+    classDef storage fill:#00,stroke:#1b5e20,stroke-width:2px;
+    classDef output fill:#00,stroke:#b71c1c,stroke-width:2px;
+
+    %% Nodes
+    User((NOC Engineer /<br>Simulated Device)) -->|Input Network Metrics<br>Latency, UPF Load, etc.| UI[Streamlit Interface<br>Monitoring Page]
+    
+    subgraph Frontend_Layer [Streamlit Application]
+        UI --> Processor[Feature Processor<br>Cleaning & Formatting]
+    end
+
+    subgraph ML_Layer [Anomaly Detection]
+        Processor -->|Feature Vector| Model{Gradient Boosting<br>Classifier}
+        Model -->|0: Normal| NormalFlow[Normal Status]
+        Model -->|1: Anomaly| AnomalyFlow[Anomaly Detected]
+    end
+
+    subgraph Data_Layer [MongoDB Storage]
+        NormalFlow -->|Store Data| DB_Norm[(MongoDB<br>normal_requests)]
+        AnomalyFlow -->|Store Data| DB_Anom[(MongoDB<br>anomaly_requests)]
+    end
+
+    subgraph AI_Layer [RAG & Intelligent Resolution]
+        AnomalyFlow -->|Trigger| RAG[RAG System]
+        FAISS[(FAISS Vector DB<br>Technical Docs)] -->|Retrieve Context| RAG
+        RAG -->|Prompt + Context| LLM[Llama 3 70B<br>via Groq API]
+        LLM -->|Generate| Solution[Action Plan &<br>CLI Commands]
+    end
+
+    subgraph Output_Layer [Visualization]
+        NormalFlow --> Dashboard[Real-time Dashboard]
+        Solution --> Dashboard
+        Dashboard -->|Charts & Graphs| Plotly[Plotly Visuals]
+    end
+
+    %% Apply Styles
+    class User,UI input;
+    class Processor,Model,NormalFlow,AnomalyFlow process;
+    class RAG,LLM,Solution ai;
+    class DB_Norm,DB_Anom,FAISS storage;
+    class Dashboard,Plotly output;
+```
+
 🚀 Getting Started
 Follow these steps to set up and run the 5G NOC Anomaly Detection System locally.
 
